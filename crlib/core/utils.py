@@ -7,9 +7,7 @@ from ..errors import ElementsError
 @cat()
 def get_elements(formula: str, with_acid_residue: bool = False, with_rep: bool = False) -> list:
     """
-    ПЕРЕДЕЛАТЬ!!!! (хз как, но придумаю (а может и не придумаю))
-
-    Тут не совсем правильное удаление елементов (если указан With_AR)
+    ...
     """
     if not formula: return
     res = re.findall(r'[A-Z][a-z]*', formula)

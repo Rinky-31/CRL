@@ -466,7 +466,7 @@ def get_reaction(reaction: str, flag: str = "->") -> tuple[dict[str, int], dict[
 def cot(*formulas, balanced: bool = True):
     """Chains of transformations 
 
-    Исправить data -> valences_group
+    Fix: data -> valences_group
     """
     if not formulas or len(formulas)<2: return
     def get_second_reactant(formula1, formula2):
