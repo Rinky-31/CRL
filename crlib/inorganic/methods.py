@@ -9,6 +9,9 @@ def get_acid_by_oxide(oxide: str) -> str | bool:
     # return acid_oxyds[oxide] if oxide in acid_oxyds else False
 
 def get_oxide_by_acid(acid) -> str | bool:
+    """
+    description ...
+    """
     return oxyds_acid.get(acid, False)
     # return oxyds_acid[acid] if acid in oxyds_acid else False
 
