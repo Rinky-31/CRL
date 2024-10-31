@@ -11,6 +11,7 @@ def get_acid_by_oxide(oxide: str) -> str | bool:
 def get_oxide_by_acid(acid) -> str | bool:
     """
     description ...
+    another to push desc ...
     """
     return oxyds_acid.get(acid, False)
     # return oxyds_acid[acid] if acid in oxyds_acid else False
