@@ -1,7 +1,7 @@
 from .data import *
 from ..errors import ElementsError
 from typing import Callable
-from types import UnionType
+from types import UnionType, FunctionType
 
 def cat(NCOE: bool = False, OIR: Callable | None = None):
     """Check Arguments Type
@@ -13,7 +13,8 @@ def cat(NCOE: bool = False, OIR: Callable | None = None):
     OIR example:
     >>> CallableObject(Error)
     """
-    def wrapper(func):
+    def wrapper(func: FunctionType):
+        if not isinstance(func, FunctionType): raise TypeError(f"Only function allowed here, not '{type(func).__name__}'")
         def argtype_checker(*a, **kw):
             annotation: dict[str, type] = func.__annotations__
             res = False
