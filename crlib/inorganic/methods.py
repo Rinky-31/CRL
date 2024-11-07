@@ -8,17 +8,15 @@ def get_acid_by_oxide(oxide: str) -> str | bool:
     return acid_oxyds.get(oxide, False)
     # return acid_oxyds[oxide] if oxide in acid_oxyds else False
 
+
 def get_oxide_by_acid(acid) -> str | bool:
     return oxyds_acid.get(acid, False)
     # return oxyds_acid[acid] if acid in oxyds_acid else False
 
 
-
 def minimal_valence(element) -> int:
     if not is_element(element): raise ElementsError(f"{element} is not element")
     return min(valences_group[element]) if element in valences_group else 1
-    
-
 
 
 def maximum_valence(element) -> int:
@@ -29,6 +27,7 @@ def maximum_valence(element) -> int:
 def get_element_valences(element: str) -> int | None:
     if not is_element(element): raise ElementsError(f"{element} is not element")
     return valences_group[element] if element in valences_group else None
+
 
 @cat()
 def substance_type(substance: str) -> str:
@@ -67,10 +66,6 @@ def substance_type(substance: str) -> str:
     raise InvalidSubstance(f"Undefiend substance: {substance or None}", substance)
 
 
-
-
-
-
 def get_element_valence(element: str, not_replace_one: bool = False, with_acid_residue: bool = False) -> int:
     if with_acid_residue:
         if is_acid_residue(element): return insoluble[element]["valence"]
@@ -78,8 +73,6 @@ def get_element_valence(element: str, not_replace_one: bool = False, with_acid_r
     res = metals[element] if is_metal(element) else not_metals[element]
     if not_replace_one: return res
     return res or minimal_valence(element)
-
-
 
 
 @cat()
@@ -280,10 +273,6 @@ def get_valence_from_formula(formula: str) -> dict:
     raise ValenceError(f"Can’t get valence from {formula}")
 
 
-
-
-
-
 @cat()
 def balance_formula(formula: str, valence: dict) -> str | None:
     _substance_type = substance_type(formula:=parse(formula, remove_first_multiplier=True))
@@ -350,22 +339,15 @@ def reaction(formula1: str, formula2: str = None, balanced: bool = True, as_dict
         if not formula2: raise ReactionError("Reaction does not occure")
         res, sbt1, sbt2 = pre_reaction(formula1, formula2, True)
         if not res: raise ReactionError("Реакція не відбувається або сталася невідома помилка (перевірте правильність хімічних формул)")
-
         val1, val2 = get_valence_from_formula(formula1), get_valence_from_formula(formula2)
         res = res.split("+")
-        elems = get_elements(res[0])
-    
-    
+        elems = get_elements(res[0])    
         if elems[0] in elements1: 
             rs = f"{formula1} + {formula2} -> {balance_formula(res[0], val1)}" if len(res)<2 else f"{formula1} + {formula2} -> {balance_formula(res[0], val1)} + {res[1].strip()}"
         elif elems[0] in elements2: 
             rs = f"{formula1} + {formula2} -> {balance_formula(res[0], val2)}" if len(res)<2 else f"{formula1} + {formula2} -> {balance_formula(res[0], val2)} + {res[1].strip()}"
-        else: raise InvalidOperation("Undefiend error, please report the problem to the author (you can find email by command: 'pip show chem')")
-    
-    
+        else: raise InvalidOperation("Undefiend error, please report the problem to the author (you can find email by command: 'pip show crlib')")
         unbalanced_formula = list(i.strip() for i in rs.split("->")[1].strip().split("+"))
-    
-    
         if len(unbalanced_formula)>1:
             sbt, form = substance_type(unbalanced_formula[1]), f"{formula1} + {formula2} -> {unbalanced_formula[0]} + "
             if unbalanced_formula[1] in ("H2O", "H2"): pass
@@ -402,6 +384,8 @@ def equation(eq: str, tags_start: str = "{", tags_end: str = "}") -> str | bool 
         -ids: ignore decompose substances
     """
     tags = {"-ad": False, "-ia": True, "-ids": False}
+
+
     def check_tags(eq: str) -> str:
         if tags_start+tags_end in eq: raise InvalidOperation(f"Empty string: '{tags_start+tags_end}'\n\n"+underline(eq, tags_start+tags_end))
         string_tags: list[str] = re.findall(f"{re.escape(tags_start)}(.*?){re.escape(tags_end)}", eq)
@@ -419,7 +403,8 @@ def equation(eq: str, tags_start: str = "{", tags_end: str = "}") -> str | bool 
         eq = eq.replace(tags_start+tags_end, "")
         if tags_start in eq or tags_end in eq or tags_start+tags_end in eq: raise InvalidOperation("Incorrect eq")
         return eq
-    
+
+
     def do_reaction() -> str | dict:
         reactants = list("".join(i.split()) for i in split_by_flag[0].split("+") if i)
         if check_result and len(split_by_flag)==2:
@@ -441,7 +426,6 @@ def equation(eq: str, tags_start: str = "{", tags_end: str = "}") -> str | bool 
     return do_reaction()
 
 
-
 @cat()
 def to_reaction_str(react: dict, prod: dict, balanced: bool = True) -> str:
     return " + ".join((str(amount) if amount!=1 else "")+formula.strip() for formula, amount in react.items()) + (" = " if balanced else " -> ") + (" + ".join((str(amount) if amount!=1 else "")+formula.strip() for formula, amount in prod.items()))
@@ -459,7 +443,6 @@ def get_reaction(reaction: str, flag: str = "->") -> tuple[dict[str, int], dict[
     react, prod = reaction.split(flag)
     react, prod = react.split("+"), prod.split("+")
     return res(react), res(prod)
-
 
 
 @cat()
@@ -521,31 +504,41 @@ def cot(*formulas, balanced: bool = True):
     return res
 
 
-def electrolytic_dissociation(electrolytic: str) -> str | list[str]:
+def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False) -> str | list[str] | tuple[str | list[str], dict[str, int]]:
     parsed, electrolytic = parse(electrolytic, ignore_first_multiplier=True), parse(electrolytic, remove_first_multiplier=True)
     res, elems = [], tuple(parsed)
+    cations = anions = 0
     match substance_type(electrolytic):
         case "Base": 
             x = parsed["H"] if parsed["H"]>1 else ''
             res.append(f"{electrolytic} -> {elems[0]}({x}+) + {x}OH(-)")
+            anions = x or 1
         case "Acid":
             acid_residue = get_elements(electrolytic, True)[-1]
             if parsed["H"]==1:
                 x = parsed["H"] if parsed["H"]>1 else ''
                 res.append(f"{electrolytic} -><- H(+) + {acid_residue}({x}-)")
+                cations = 1
             else:
-                charge = 1
+                charge = cations = 1
                 while parsed["H"]>1:
                     x = parsed["H"] if parsed["H"]>1 else ''
                     res.append(f"{electrolytic} -><- H(+) + H{parsed['H']-1 if parsed['H']-1>1 else ''}{acid_residue}({charge if charge>1 else ''}-)")
                     electrolytic = f"H{parsed['H']-1 if parsed['H']-1>1 else ''}{acid_residue}({charge if charge>1 else ''}-)"
                     parsed["H"]-=1
                     charge+=1
+                    cations+=1
                 res.append(f"{electrolytic} -><- H(+) + {acid_residue}({charge if charge>1 else ''}-)")
         case "Salt":
             x, y = parsed[elems[0]] if parsed[elems[0]]>1 else '', parsed[elems[1]] if parsed[elems[1]]>1 else ''
             res.append(f"{electrolytic} -> {x}{elems[0]}({y}+) + {y}{get_elements(electrolytic, True)[-1]}({x}-)")
     if not res: raise ReactionError("Does not decompose")
+    if get_ion_amount:
+        return res if len(res)>1 else res[0], {"cations": cations, "anions": anions}
     return res if len(res)>1 else res[0]
 
-        
+
+def get_type_by_ion_ratio(electrolytic: str):
+    res = electrolytic_dissociation(electrolytic, True)[-1]
+    if res["cations"]==res["anions"]: return "Neutral"
+    return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
