@@ -538,7 +538,7 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False) -
     return res if len(res)>1 else res[0]
 
 
-def get_type_by_ion_ratio(electrolytic: str):
+def get_type_by_ion_ratio(electrolytic: str) -> str:
     res = electrolytic_dissociation(electrolytic, True)[-1]
     if res["cations"]==res["anions"]: return "Neutral"
     return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
