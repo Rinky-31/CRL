@@ -3,6 +3,7 @@ from ..errors import ElementsError
 from typing import Callable
 from types import UnionType, FunctionType
 
+
 def cat(NCOE: bool = False, OIR: Callable | None = None):
     """Check Arguments Type
 
@@ -48,37 +49,26 @@ def cat(NCOE: bool = False, OIR: Callable | None = None):
 def is_metal(element): return element in metals if is_element(element) else False
     
 
-
-
 def is_correct_valence(element: str, valence: int) -> bool:
     if is_element(element):
         return metals.get(element, False) or not_metals.get(element, False) or (element in valences_group and valence in valences_group[element])
 
 
-
-
 def is_correct_alkane(alkane: str): return alkane in alkans
-
-
 
 
 def is_acid_residue(formula):
     return False if "OH" in formula else formula in insoluble
 
 
-
-
 def is_element(formula) -> bool:
     return formula in metals or formula in not_metals
-    
 
 
 @cat()
 def is_soluble(formula: str, group: str):
     if not group in insoluble: raise ElementsError(f"{group} is not in insoluble dict")
     return not formula in insoluble[group]["elements"]
-
-
 
 
 def arm_check(metal: str, get_index: bool = False, get_element: bool = False):
@@ -94,8 +84,6 @@ def arm_check(metal: str, get_index: bool = False, get_element: bool = False):
         return ARM.index(metal)<ARM.index("H2")
     except:
         return False
-
-
 
 
 def acid_check(acid_1, acid_2):

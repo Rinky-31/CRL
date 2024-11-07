@@ -3,7 +3,6 @@ from .validators import *
 from ..errors import ElementsError
 
 
-
 @cat()
 def get_elements(formula: str, with_acid_residue: bool = False, with_rep: bool = False) -> list:
     """
@@ -26,7 +25,6 @@ def get_elements(formula: str, with_acid_residue: bool = False, with_rep: bool =
     for i in (res:=list(dict.fromkeys(res))): 
         if not is_element(i) and not is_acid_residue(i): raise ElementsError(f"{i} is not element", i)
     return res
-
 
 
 @cat()
@@ -76,6 +74,7 @@ def parse(formula: str, get_first_mult: bool = False, remove_first_multiplier: b
             t = {key: val*pre_mult for key, val in t.items()}
         return t
     return False
+
 
 @cat()
 def get_formulas(string: str):
