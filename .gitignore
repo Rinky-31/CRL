@@ -1,5 +1,6 @@
 notes.txt
 __pycache__
+/crlib/tests
 testing.py
 t.py
 test.py
