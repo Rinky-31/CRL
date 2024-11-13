@@ -561,7 +561,7 @@ def get_type_by_ion_ratio(electrolytic: str) -> str:
     return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
 
 
-def get_ion_equation(eq: str, full: bool = False, solve: bool = True, ignore_not_dec_sbt: bool = False) -> str:
+def get_ion_equation(eq: str, full: bool = False, solve: bool = True, ignore_not_dec_sbt: bool = False) -> str | None:
 
 
     def substance_check(substance: str) -> bool:
@@ -576,4 +576,4 @@ def get_ion_equation(eq: str, full: bool = False, solve: bool = True, ignore_not
     if full: return f"{get_eq(react_formulas)} -> {get_eq(prod_formulas)}"
     replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
     react, prod = set(replace(get_eq(react_formulas)).split()), set(replace(get_eq(prod_formulas)).split())
-    return f"{' + '.join(react.difference(prod))} -> {' + '.join(prod.difference(react))}"
+    return res if (res:=f"{' + '.join(react.difference(prod))} -> {' + '.join(prod.difference(react))}").strip().replace("->", "") else None
