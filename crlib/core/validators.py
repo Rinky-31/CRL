@@ -7,11 +7,6 @@ def cat(NCOE: bool = False):
     """Check Arguments Type
 
     NCOE (Not Call On Error) - not call the function if arguments check failed
-
-    OIR - (On Isisnstance Error) - object that is called if 'isinstance' raised TypeError
-
-    OIR example:
-    >>> CallableObject(Error)
     """
     def wrapper(func: FunctionType):
         if not isinstance(func, FunctionType): raise TypeError(f"Only function allowed here, not '{type(func).__name__}'")
