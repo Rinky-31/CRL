@@ -1,6 +1,5 @@
 from .data import *
 from ..errors import ElementsError
-from typing import Callable
 from types import UnionType, FunctionType
 
 
@@ -23,7 +22,7 @@ def cat(NCOE: bool = False):
                 if argname in annotation:
                     try:
                         res = isinstance(arg, annotation[argname])
-                    except TypeError as err: break
+                    except TypeError: continue
                     if not res:
                         if NCOE: break
                         raise TypeError(f"argument '{argname}' must be '{annotation[argname].__name__ if not isinstance(annotation[argname], UnionType) else annotation[argname]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'")
@@ -32,7 +31,7 @@ def cat(NCOE: bool = False):
                 if arg in annotation:
                     try:
                         res = isinstance(kw[arg], annotation[arg])
-                    except TypeError as err: break
+                    except TypeError: continue
                     if not res:
                         if NCOE: break
                         raise TypeError(f"argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'")
