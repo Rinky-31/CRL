@@ -506,7 +506,7 @@ def cot(*formulas, balanced: bool = True):
     return res
 
 
-def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, products_only: bool = False, result_only: bool = True, balance_not_dec_sbt: bool = True) -> str | list[str] | tuple[str | list[str], str] | tuple[str | list[str], dict[str, int]] | tuple[str | list[str], str, dict[str, int]]:
+def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, products_only: bool = False, result_only: bool = True, ignore_not_dec_sbt: bool = False, balance_not_dec_sbt: bool = True) -> str | list[str] | tuple[str | list[str], str] | tuple[str | list[str], dict[str, int]] | tuple[str | list[str], str, dict[str, int]]:
     parsed, first_mult = parse(electrolytic, ignore_first_multiplier=True), parse(electrolytic, get_first_mult=True)
     res, elems = [], tuple(parsed)
     cations = anions = 0
@@ -517,7 +517,10 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
             res.append(final_res:=f"{electrolytic} -> {(cations:=first_mult*parsed[elems[0]] if first_mult!=1 else parsed[elems[0]] if parsed[elems[0]]!=1 else '')}{elems[0]}({x}+) + {(anions:=x*first_mult if x else first_mult if first_mult!=1 else '')}OH(-)")
             anions, cations = anions or 1, cations or 1
         case "Acid":
-            if parse(electrolytic, remove_first_multiplier=True) in ("H2CO3", "H2SO3"): return reaction(electrolytic, balanced=balance_not_dec_sbt).replace("=", "->")
+            if not ignore_not_dec_sbt and parse(electrolytic, remove_first_multiplier=True) in ("H2CO3", "H2SO3"): 
+                res.append(final_res:=reaction(electrolytic, balanced=balance_not_dec_sbt).replace("=", "->"))
+                if products_only: return final_res.split("->")[-1].strip() if not get_ion_amount else (final_res.split("->")[-1].strip(), None)
+                return final_res
             acid_residue = get_elements(electrolytic, True)[-1]
             if parsed["H"]==1:
                 x = parsed["H"] if parsed["H"]>1 else ''
@@ -558,7 +561,7 @@ def get_type_by_ion_ratio(electrolytic: str) -> str:
     return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
 
 
-def get_ion_equation(eq: str, full: bool = False, solve: bool = True) -> str:
+def get_ion_equation(eq: str, full: bool = False, solve: bool = True, ignore_not_dec_sbt: bool = False) -> str:
 
 
     def substance_check(substance: str) -> bool:
@@ -569,7 +572,7 @@ def get_ion_equation(eq: str, full: bool = False, solve: bool = True) -> str:
     eq = equation(eq) if solve else eq
     react_formulas, prod_formulas = eq.split(flag:="->" if "->" in eq else "=")
     react_formulas, prod_formulas = get_formulas(react_formulas), get_formulas(prod_formulas)
-    get_eq = lambda formulas: " + ".join(map(lambda substance: electrolytic_dissociation(substance, products_only=True, balance_not_dec_sbt=flag=="=") if substance_check(substance) else substance, formulas))
+    get_eq = lambda formulas: " + ".join(map(lambda substance: electrolytic_dissociation(substance, products_only=True, ignore_not_dec_sbt=ignore_not_dec_sbt, balance_not_dec_sbt=flag=="=") if substance_check(substance) else substance, formulas))
     if full: return f"{get_eq(react_formulas)} -> {get_eq(prod_formulas)}"
     replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
     react, prod = set(replace(get_eq(react_formulas)).split()), set(replace(get_eq(prod_formulas)).split())
