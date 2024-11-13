@@ -4,7 +4,7 @@ from ..errors import ElementsError
 
 
 @cat()
-def get_elements(formula: str, with_acid_residue: bool = False, with_rep: bool = False) -> list:
+def get_elements(formula: str | None, with_acid_residue: bool = False, with_rep: bool = False) -> list:
     """
     ...
     """

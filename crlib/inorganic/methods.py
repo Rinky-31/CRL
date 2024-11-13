@@ -322,7 +322,7 @@ def balance_reaction(reactans: dict, products: dict) -> tuple[dict, dict, bool]:
 
 
 @cat()
-def reaction(formula1: str, formula2: str = None, balanced: bool = True, as_dict: bool = False, ignore_amount: bool = True, ignore_dec_substances: bool = False) -> str | dict:
+def reaction(formula1: str, formula2: str | None = None, balanced: bool = True, as_dict: bool = False, ignore_amount: bool = True, ignore_dec_substances: bool = False) -> str | dict:
     normal_reaction, rs = True, None
     elements1, elements2 = get_elements(formula1), get_elements(formula2)
     if not formula2 and not ignore_dec_substances:
@@ -435,6 +435,8 @@ def to_reaction_str(react: dict, prod: dict, balanced: bool = True) -> str:
 def get_reaction(reaction: str, flag: str = "->") -> tuple[dict[str, int], dict[str, int]]:
     if not reaction: raise TypeError("Incorrect type of reaction")
     elif not flag in reaction: raise InvalidOperation("flag is not in reaction")
+
+
     def res(current: list[str]):
         result = {}
         for i in current:
@@ -504,7 +506,7 @@ def cot(*formulas, balanced: bool = True):
     return res
 
 
-def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, products_only: bool = False, result_only: bool = True) -> str | list[str] | tuple[str | list[str], str] | tuple[str | list[str], dict[str, int]] | tuple[str | list[str], str, dict[str, int]]:
+def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, products_only: bool = False, result_only: bool = True, balance_not_dec_sbt: bool = True) -> str | list[str] | tuple[str | list[str], str] | tuple[str | list[str], dict[str, int]] | tuple[str | list[str], str, dict[str, int]]:
     parsed, first_mult = parse(electrolytic, ignore_first_multiplier=True), parse(electrolytic, get_first_mult=True)
     res, elems = [], tuple(parsed)
     cations = anions = 0
@@ -515,6 +517,7 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
             res.append(final_res:=f"{electrolytic} -> {(cations:=first_mult*parsed[elems[0]] if first_mult!=1 else parsed[elems[0]] if parsed[elems[0]]!=1 else '')}{elems[0]}({x}+) + {(anions:=x*first_mult if x else first_mult if first_mult!=1 else '')}OH(-)")
             anions, cations = anions or 1, cations or 1
         case "Acid":
+            if parse(electrolytic, remove_first_multiplier=True) in ("H2CO3", "H2SO3"): return reaction(electrolytic, balanced=balance_not_dec_sbt).replace("=", "->")
             acid_residue = get_elements(electrolytic, True)[-1]
             if parsed["H"]==1:
                 x = parsed["H"] if parsed["H"]>1 else ''
@@ -554,5 +557,20 @@ def get_type_by_ion_ratio(electrolytic: str) -> str:
     if res["cations"]==res["anions"]: return "Neutral"
     return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
 
-def get_ion_equation(eq: str, full: bool = False):
-    formulas, eq = get_formulas(eq), equation(eq)
+
+def get_ion_equation(eq: str, full: bool = False, solve: bool = True) -> str:
+
+
+    def substance_check(substance: str) -> bool:
+        if not (sbt:=substance_type(substance)) in ("Acid", "Base", "Salt"): return False
+        return is_soluble((elems:=get_elements(substance, sbt in ("Acid", "Salt")))[0], "".join(elems[1:]))
+
+    
+    eq = equation(eq) if solve else eq
+    react_formulas, prod_formulas = eq.split(flag:="->" if "->" in eq else "=")
+    react_formulas, prod_formulas = get_formulas(react_formulas), get_formulas(prod_formulas)
+    get_eq = lambda formulas: " + ".join(map(lambda substance: electrolytic_dissociation(substance, products_only=True, balance_not_dec_sbt=flag=="=") if substance_check(substance) else substance, formulas))
+    if full: return f"{get_eq(react_formulas)} -> {get_eq(prod_formulas)}"
+    replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
+    react, prod = set(replace(get_eq(react_formulas)).split()), set(replace(get_eq(prod_formulas)).split())
+    return f"{' + '.join(react.difference(prod))} -> {' + '.join(prod.difference(react))}"

@@ -4,7 +4,7 @@ from typing import Callable
 from types import UnionType, FunctionType
 
 
-def cat(NCOE: bool = False, OIR: Callable | None = None):
+def cat(NCOE: bool = False):
     """Check Arguments Type
 
     NCOE (Not Call On Error) - not call the function if arguments check failed
@@ -23,9 +23,7 @@ def cat(NCOE: bool = False, OIR: Callable | None = None):
                 if argname in annotation:
                     try:
                         res = isinstance(arg, annotation[argname])
-                    except TypeError as err:
-                        if callable(OIR): OIR(err)
-                        break
+                    except TypeError as err: break
                     if not res:
                         if NCOE: break
                         raise TypeError(f"argument '{argname}' must be '{annotation[argname].__name__ if not isinstance(annotation[argname], UnionType) else annotation[argname]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'")
@@ -34,9 +32,7 @@ def cat(NCOE: bool = False, OIR: Callable | None = None):
                 if arg in annotation:
                     try:
                         res = isinstance(kw[arg], annotation[arg])
-                    except TypeError as err:
-                        if callable(OIR): OIR(err)
-                        break
+                    except TypeError as err: break
                     if not res:
                         if NCOE: break
                         raise TypeError(f"argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'")
