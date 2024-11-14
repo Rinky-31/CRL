@@ -520,7 +520,8 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
             if not ignore_not_dec_sbt and parse(electrolytic, remove_first_multiplier=True) in ("H2CO3", "H2SO3"): 
                 res.append(final_res:=reaction(electrolytic, balanced=balance_not_dec_sbt).replace("=", "->"))
                 if products_only: return final_res.split("->")[-1].strip() if not get_ion_amount else (final_res.split("->")[-1].strip(), None)
-                return final_res
+                if get_ion_amount: return (final_res, res, {"cations": cations, "anions": anions}) if not result_only else (final_res, {"cations": cations, "anions": anions})
+                return (final_res, res) if not result_only else final_res
             acid_residue = get_elements(electrolytic, True)[-1]
             if parsed["H"]==1:
                 x = parsed["H"] if parsed["H"]>1 else ''
@@ -561,19 +562,21 @@ def get_type_by_ion_ratio(electrolytic: str) -> str:
     return "Acidic" if res["cations"]>res["anions"] else "Alkaline"
 
 
-def get_ion_equation(eq: str, full: bool = False, solve: bool = True, ignore_not_dec_sbt: bool = False) -> str | None:
+def get_ion_equation(molecular_eq: str, full: bool = False, solve: bool = True, ignore_not_dec_sbt: bool = False) -> str | None:
 
 
     def substance_check(substance: str) -> bool:
         if not (sbt:=substance_type(substance)) in ("Acid", "Base", "Salt"): return False
         return is_soluble((elems:=get_elements(substance, sbt in ("Acid", "Salt")))[0], "".join(elems[1:]))
 
-    
-    eq = equation(eq) if solve else eq
-    react_formulas, prod_formulas = eq.split(flag:="->" if "->" in eq else "=")
+
+    molecular_eq = equation(molecular_eq) if solve else molecular_eq
+    react_formulas, prod_formulas = molecular_eq.split(flag:="->" if "->" in molecular_eq else "=")
     react_formulas, prod_formulas = get_formulas(react_formulas), get_formulas(prod_formulas)
     get_eq = lambda formulas: " + ".join(map(lambda substance: electrolytic_dissociation(substance, products_only=True, ignore_not_dec_sbt=ignore_not_dec_sbt, balance_not_dec_sbt=flag=="=") if substance_check(substance) else substance, formulas))
     if full: return f"{get_eq(react_formulas)} -> {get_eq(prod_formulas)}"
     replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
     react, prod = set(replace(get_eq(react_formulas)).split()), set(replace(get_eq(prod_formulas)).split())
     return res if (res:=f"{' + '.join(react.difference(prod))} -> {' + '.join(prod.difference(react))}").strip().replace("->", "") else None
+
+def get_molecular_equation(ion_eq: str): pass
