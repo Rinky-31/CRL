@@ -28,6 +28,7 @@ class OrderedSet():
     def __getitem__(self, item: Hashable):
         if item in self.container: return self.container[item]
     def __setitem__(self, index: int, value: Hashable): hash(value); self.container[index] = value
+    def __contains__(self, el): return el in self.container
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
     def __repr__(self) -> str: return f"OrderedSet({self})"
     def __eq__(self, orderedSet: "OrderedSet") -> bool:
