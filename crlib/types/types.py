@@ -1,7 +1,7 @@
 from typing import Iterable, Hashable
 class OrderedSet():
-    def __init__(self, iterable: Iterable):
-        self.container: list = list(dict.fromkeys(iterable))
+    def __init__(self, obj: Iterable):
+        self.container: list = list(dict.fromkeys(obj))
     def __add__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if isinstance(orderedSet, OrderedSet):
             other_set, current_set = dict.fromkeys(orderedSet.container), dict.fromkeys(self.container)

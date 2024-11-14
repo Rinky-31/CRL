@@ -2,6 +2,7 @@ import math as m
 from ..core.utils import *
 from ..core.warnings import warn
 from ..errors import *
+from ..types import OrderedSet
 
 
 def get_acid_by_oxide(oxide: str) -> str | bool:
@@ -576,7 +577,7 @@ def get_ion_equation(molecular_eq: str, full: bool = False, solve: bool = True, 
     get_eq = lambda formulas: " + ".join(map(lambda substance: electrolytic_dissociation(substance, products_only=True, ignore_not_dec_sbt=ignore_not_dec_sbt, balance_not_dec_sbt=flag=="=") if substance_check(substance) else substance, formulas))
     if full: return f"{get_eq(react_formulas)} -> {get_eq(prod_formulas)}"
     replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
-    react, prod = set(replace(get_eq(react_formulas)).split()), set(replace(get_eq(prod_formulas)).split())
-    return res if (res:=f"{' + '.join(react.difference(prod))} -> {' + '.join(prod.difference(react))}").strip().replace("->", "") else None
+    react, prod = OrderedSet(replace(get_eq(react_formulas)).split()), OrderedSet(replace(get_eq(prod_formulas)).split())
+    return res if (res:=f"{' + '.join(react - prod)} -> {' + '.join(prod - react)}").strip().replace("->", "") else None
 
 def get_molecular_equation(ion_eq: str): pass
