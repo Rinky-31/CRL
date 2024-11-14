@@ -25,14 +25,6 @@ class OrderedSet():
         if isinstance(orderedSet, OrderedSet):
             return OrderedSet(i for i in self.container if i not in orderedSet.container)
         raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-    def difference(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        return self.__sub__(orderedSet)
-    def union(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        return self.__add__(orderedSet)
-    def add(self, el: Hashable):
-        if el not in self.container: hash(el); self.container.append(el)
-    def remove(self, el: Hashable):
-        if el in self.container: self.container.remove(el)
     def __getitem__(self, item: Hashable):
         if item in self.container: return self.container[item]
     def __setitem__(self, index: int, value: Hashable): hash(value); self.container[index] = value
@@ -43,4 +35,12 @@ class OrderedSet():
             return set(self.container)==set(orderedSet.container)
         raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __len__(self) -> int: return len(self.container)
+    def difference(self, orderedSet: "OrderedSet") -> "OrderedSet":
+        return self.__sub__(orderedSet)
+    def union(self, orderedSet: "OrderedSet") -> "OrderedSet":
+        return self.__add__(orderedSet)
+    def add(self, el: Hashable):
+        if el not in self.container: hash(el); self.container.append(el)
+    def remove(self, el: Hashable):
+        if el in self.container: self.container.remove(el)
     def insert(self, item, position: int = 0): hash(item); self.container.insert(position, item)
