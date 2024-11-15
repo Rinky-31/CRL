@@ -27,7 +27,7 @@ class OrderedSet():
         raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __getitem__(self, index: int):
         if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
-        if index>=len(self.container) or abs(index)>len(self.container): raise IndexError("container index out of range")
+        if index>=(l:=len(self.container)) or abs(index)>l: raise IndexError("container index out of range")
         return self.container[index]
     def __setitem__(self, index: int, value: Hashable):
         if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
