@@ -29,7 +29,7 @@ class OrderedSet():
         if index in self.container: return self.container[index]
     def __setitem__(self, index: int, value: Hashable): hash(value); self.container[index] = value
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
-    def __repr__(self) -> str: return f"OrderedSet({self})"
+    def __repr__(self) -> str: return f"{type(self).__name__}({self})"
     def __eq__(self, orderedSet: "OrderedSet") -> bool:
         if isinstance(orderedSet, OrderedSet):
             return set(self.container)==set(orderedSet.container)
