@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name="crlib",
-    version="0.4.2",
+    version="0.4.3",
     author="Rinky-31",
     packages=find_packages(),
     extras_require = {"balance": "chempy"},

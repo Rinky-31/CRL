@@ -579,5 +579,3 @@ def get_ion_equation(molecular_eq: str, full: bool = False, solve: bool = True, 
     replace = lambda string: re.sub(r'\+(?=[^()]*\(|[^()]*$)', '', string)
     react, prod = OrderedSet(replace(get_eq(react_formulas)).split()), OrderedSet(replace(get_eq(prod_formulas)).split())
     return res if (res:=f"{' + '.join(react - prod)} -> {' + '.join(prod - react)}").strip().replace("->", "") else None
-
-def get_molecular_equation(ion_eq: str): pass
