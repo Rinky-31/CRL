@@ -26,7 +26,7 @@ class OrderedSet():
             return OrderedSet(i for i in self.container if i not in orderedSet.container)
         raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __getitem__(self, index: int):
-        if index>=len(self.container): raise IndexError("container index out of range")
+        if index>=len(self.container) or abs(index)>len(self.container): raise IndexError("container index out of range")
         return self.container[index]
     def __setitem__(self, index: int, value: Hashable): hash(value); self.container[index] = value
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
