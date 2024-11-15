@@ -1,6 +1,6 @@
 from typing import Iterable, Hashable
 class OrderedSet():
-    def __init__(self, obj: Iterable | None = None):
+    def __init__(self, obj: Iterable[Hashable] | None = None):
         self.container: list = list(dict.fromkeys(obj)) if obj else []
     def __add__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if isinstance(orderedSet, OrderedSet):
@@ -43,13 +43,15 @@ class OrderedSet():
             return set(self.container)==set(orderedSet.container)
         raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __len__(self) -> int: return len(self.container)
-    def difference(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        return self.__sub__(orderedSet)
-    def union(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        return self.__add__(orderedSet)
+    def difference(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
+        return self.__sub__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
+    def union(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
+        return self.__add__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
+    def update(self, orderedSet: "OrderedSet" | Iterable[Hashable]):
+        self.__iadd__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
     def add(self, el: Hashable):
         if el not in self.container: hash(el); self.container.append(el)
     def remove(self, el: Hashable):
         if el in self.container: self.container.remove(el)
     def pop(self, index: int = 0): return self.container.pop(index)
-    def insert(self, item, position: int = 0): hash(item); self.container.insert(position, item)
+    def insert(self, item: Hashable, position: int = 0): hash(item); self.container.insert(position, item)
