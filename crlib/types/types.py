@@ -43,4 +43,5 @@ class OrderedSet():
         if el not in self.container: hash(el); self.container.append(el)
     def remove(self, el: Hashable):
         if el in self.container: self.container.remove(el)
+    def pop(self, index: int = 0): return self.container.pop(index)
     def insert(self, item, position: int = 0): hash(item); self.container.insert(position, item)
