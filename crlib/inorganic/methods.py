@@ -551,9 +551,7 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
         if result_only:
              return final_res, {"cations": cations, "anions": anions}     
         return final_res, res, {"cations": cations, "anions": anions}
-    if result_only:
-        return final_res
-    return final_res, res
+    return final_res if result_only else (final_res, res)
 
 
 def get_type_by_ion_ratio(electrolytic: str) -> str:
