@@ -2,6 +2,7 @@ from typing import Iterable, Hashable
 class OrderedSet():
     def __init__(self, obj: Iterable[Hashable] | None = None):
         self.container: list = list(dict.fromkeys(obj)) if obj else []
+    def __call__(self, orderedSet: "OrderedSet" | Iterable[Hashable]): self.update(orderedSet)
     def __add__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if isinstance(orderedSet, OrderedSet):
             other_set, current_set = dict.fromkeys(orderedSet.container), dict.fromkeys(self.container)
@@ -15,16 +16,16 @@ class OrderedSet():
             self.container = list(current_set)
             return self
         raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+    def __sub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
+        if isinstance(orderedSet, OrderedSet):
+            return OrderedSet(i for i in self.container if i not in orderedSet.container)
+        raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __isub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if isinstance(orderedSet, OrderedSet):
             self.container = [i for i in self.container if i not in orderedSet.container]
             return self
         raise TypeError(f"unsupported operand type(s) for -=: '{type(self.__name__)}' and '{type(orderedSet).__name__}'")
     def __iter__(self): return iter(self.container)
-    def __sub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if isinstance(orderedSet, OrderedSet):
-            return OrderedSet(i for i in self.container if i not in orderedSet.container)
-        raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __getitem__(self, index: int | slice):
         if not isinstance(index, int | slice): raise TypeError(f"'index' must be 'int' or 'slice', not '{type(index).__name__}'")
         if isinstance(index, slice): return OrderedSet(self.container[index])
