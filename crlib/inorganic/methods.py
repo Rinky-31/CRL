@@ -548,9 +548,7 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
         res = list(map(lambda substance: substance.split("-><-" if "-><-" in substance else "->")[-1].strip(), res))
         final_res = final_res.split("-><-" if "-><-" in final_res else "->")[-1].strip()
     if get_ion_amount:
-        if result_only:
-             return final_res, {"cations": cations, "anions": anions}     
-        return final_res, res, {"cations": cations, "anions": anions}
+        return (final_res, {"cations": cations, "anions": anions}) if result_only else (final_res, res, {"cations": cations, "anions": anions})  
     return final_res if result_only else (final_res, res)
 
 
