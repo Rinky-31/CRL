@@ -25,16 +25,17 @@ class OrderedSet():
         if isinstance(orderedSet, OrderedSet):
             return OrderedSet(i for i in self.container if i not in orderedSet.container)
         raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-    def __getitem__(self, index: int):
-        if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
+    def __getitem__(self, index: int | slice):
+        if not isinstance(index, int | slice): raise TypeError(f"'index' must be 'int' or 'slice', not '{type(index).__name__}'")
         if index>=(l:=len(self.container)) or abs(index)>l: raise IndexError("container index out of range")
         return self.container[index]
     def __setitem__(self, index: int, value: Hashable):
         if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
         if index>=(l:=len(self.container)) or abs(index)>l: raise IndexError("container index out of range")
-        hash(value); self.container[index] = value
-    def __delitem__(self, index: int):
-        if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
+        hash(value)
+        self.container[index] = value
+    def __delitem__(self, index: int | slice):
+        if not isinstance(index, int | slice): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
         del self.container[index]
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
     def __repr__(self) -> str: return f"{type(self).__name__}({self})"
@@ -50,8 +51,15 @@ class OrderedSet():
     def update(self, orderedSet: "OrderedSet" | Iterable[Hashable]):
         self.__iadd__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
     def add(self, el: Hashable):
-        if el not in self.container: hash(el); self.container.append(el)
+        if el not in self.container: 
+            hash(el)
+            self.container.append(el)
     def remove(self, el: Hashable):
         if el in self.container: self.container.remove(el)
     def pop(self, index: int = 0): return self.container.pop(index)
-    def insert(self, item: Hashable, position: int = 0): hash(item); self.container.insert(position, item)
+    def insert(self, item: Hashable, position: int = 0):
+        hash(item)
+        self.container.insert(position, item)
+    def exchange(self, first_index: int, second_index: int):
+        if isinstance(first_index, slice) or isinstance(second_index, slice): raise TypeError("'slice' not allowed here")
+        self[first_index], self[second_index] = self[second_index], self[first_index]
