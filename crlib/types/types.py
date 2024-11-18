@@ -4,22 +4,18 @@ class OrderedSet():
         self.container: list = list(dict.fromkeys(obj)) if obj else []
     def __call__(self, orderedSet: "OrderedSet" | Iterable[Hashable]): self.update(orderedSet)
     def __add__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if isinstance(orderedSet, OrderedSet):
-            other_set, current_set = dict.fromkeys(orderedSet.container), dict.fromkeys(self.container)
-            current_set.update(other_set)
-            return OrderedSet(current_set)
-        raise TypeError(f"unsupported operand type(s) for +: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        if not isinstance(orderedSet, OrderedSet): 
+            raise TypeError(f"unsupported operand type(s) for +: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        return self.union(orderedSet)
     def __iadd__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if isinstance(orderedSet, OrderedSet):
-            other_set, current_set = dict.fromkeys(orderedSet.container), dict.fromkeys(self.container)
-            current_set.update(other_set)
-            self.container = list(current_set)
-            return self
-        raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        if not isinstance(orderedSet, OrderedSet):
+            raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        self.update(orderedSet)
+        return self
     def __sub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if isinstance(orderedSet, OrderedSet):
-            return OrderedSet(i for i in self.container if i not in orderedSet.container)
-        raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        if not isinstance(orderedSet, OrderedSet):
+            raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        return self.difference(orderedSet)
     def __isub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if isinstance(orderedSet, OrderedSet):
             self.container = [i for i in self.container if i not in orderedSet.container]
@@ -47,11 +43,16 @@ class OrderedSet():
         raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __len__(self) -> int: return len(self.container)
     def difference(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
-        return self.__sub__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
+        orderedSet = orderedSet.container if isinstance(orderedSet, OrderedSet) else orderedSet
+        return OrderedSet(i for i in self.container if i not in orderedSet)
     def union(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
-        return self.__add__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
+        other_set, current_set = dict.fromkeys(orderedSet.container if isinstance(orderedSet, OrderedSet) else orderedSet), dict.fromkeys(self.container)
+        current_set.update(other_set)
+        return OrderedSet(current_set)
     def update(self, orderedSet: "OrderedSet" | Iterable[Hashable]):
-        self.__iadd__(orderedSet if isinstance(orderedSet, OrderedSet) else OrderedSet(orderedSet))
+        other_set, current_set = dict.fromkeys(orderedSet.container if isinstance(orderedSet, OrderedSet) else orderedSet), dict.fromkeys(self.container)
+        current_set.update(other_set)
+        self.container = list(current_set)
     def add(self, el: Hashable):
         if el not in self.container: 
             hash(el)
