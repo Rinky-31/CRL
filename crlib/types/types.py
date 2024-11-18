@@ -66,6 +66,6 @@ class OrderedSet():
     def exchange(self, first_index: int, second_index: int):
         if isinstance(first_index, slice) or isinstance(second_index, slice): raise TypeError("'slice' not allowed here")
         self[first_index], self[second_index] = self[second_index], self[first_index]
-    def compare(self, orderedSet: "OrderedSet", ordered: bool = False):
+    def compare(self, orderedSet: "OrderedSet", ordered: bool = False) -> bool:
         if not isinstance(orderedSet, OrderedSet): return False
         return self.container == orderedSet.container if ordered else set(self.container) == set(orderedSet.container)
