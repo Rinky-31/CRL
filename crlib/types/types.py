@@ -38,9 +38,9 @@ class OrderedSet():
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
     def __repr__(self) -> str: return f"{type(self).__name__}({self})"
     def __eq__(self, orderedSet: "OrderedSet") -> bool:
-        if isinstance(orderedSet, OrderedSet):
-            return self.compare(orderedSet)
-        raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        if not isinstance(orderedSet, OrderedSet):
+            raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        return self.compare(orderedSet)
     def __len__(self) -> int: return len(self.container)
     def difference(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
         orderedSet = orderedSet.container if isinstance(orderedSet, OrderedSet) else orderedSet
