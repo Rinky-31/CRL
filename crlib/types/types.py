@@ -39,7 +39,7 @@ class OrderedSet():
     def __repr__(self) -> str: return f"{type(self).__name__}({self})"
     def __eq__(self, orderedSet: "OrderedSet") -> bool:
         if isinstance(orderedSet, OrderedSet):
-            return set(self.container)==set(orderedSet.container)
+            return self.compare(orderedSet)
         raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
     def __len__(self) -> int: return len(self.container)
     def difference(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
@@ -66,3 +66,6 @@ class OrderedSet():
     def exchange(self, first_index: int, second_index: int):
         if isinstance(first_index, slice) or isinstance(second_index, slice): raise TypeError("'slice' not allowed here")
         self[first_index], self[second_index] = self[second_index], self[first_index]
+    def compare(self, orderedSet: "OrderedSet", ordered: bool = False):
+        if not isinstance(orderedSet, OrderedSet): return False
+        return self.container == orderedSet.container if ordered else set(self.container) == set(orderedSet.container)
