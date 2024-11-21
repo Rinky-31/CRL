@@ -540,8 +540,12 @@ def electrolytic_dissociation(electrolytic: str, get_ion_amount: bool = False, p
                 res.append(f"{electrolytic} -><- H(+) + {acid_residue}({charge if charge>1 else ''}-)")
                 final_res, anions = f"{el}({charge if charge>1 else ''}-)", anions or 1
         case "Salt":
-            x, y = parsed[elems[0]] if parsed[elems[0]]>1 else '', parsed[elems[1]] if parsed[elems[1]]>1 else ''
-            res.append(final_res:=f"{electrolytic} -> {(cations:=x*first_mult if x else first_mult if first_mult!=1 else '')}{elems[0]}({y}+) + {(anions:=y*first_mult if y else  first_mult if first_mult!=1 else '')}{get_elements(electrolytic, True)[-1]}({x}-)")
+            if tuple(parsed.values())[:2] == (1, 1):
+                x, y = (insoluble.get(acid_residue:=has_acid_residue(electrolytic), {}).get("valence", 1),)*2
+                res.append(final_res:=f"{electrolytic} -> {(cations:=first_mult if first_mult!=1 else '')}{elems[0]}({y}+) + {(anions:=first_mult if first_mult!=1 else '')}{acid_residue}({x}-)")
+            else:
+                x, y = parsed[elems[0]] if parsed[elems[0]]>1 else "", parsed[elems[1]] if parsed[elems[1]]>1 else "" 
+                res.append(final_res:=f"{electrolytic} -> {(cations:=x*first_mult if x else first_mult if first_mult!=1 else '')}{elems[0]}({y}+) + {(anions:=y*first_mult if y else  first_mult if first_mult!=1 else '')}{has_acid_residue(electrolytic)}({x}-)")
             cations, anions = cations or 1, anions or 1
     if not res: raise ReactionError("Does not decompose")
     if products_only:
