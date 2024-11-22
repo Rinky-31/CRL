@@ -21,11 +21,11 @@ class OrderedSet():
             raise TypeError(f"unsupported operand type(s) for -=: '{type(self.__name__)}' and '{type(orderedSet).__name__}'")
         self.container = [i for i in self.container if i not in orderedSet.container]
         return self
-    def __and__(self, orderedSet: "OrderedSet"): 
+    def __and__(self, orderedSet: "OrderedSet") -> "OrderedSet": 
         if not isinstance(orderedSet, OrderedSet): 
             raise TypeError(f"unsupported operand type(s) for &: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
         return self.__add__(orderedSet)
-    def __rand__(self, orderedSet: "OrderedSet"):
+    def __rand__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if not isinstance(orderedSet, OrderedSet): 
             raise TypeError(f"unsupported operand type(s) for &: '{type(orderedSet).__name__}' and '{type(self).__name__}'")
         return self.__add__(orderedSet)
