@@ -17,10 +17,18 @@ class OrderedSet():
             raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
         return self.difference(orderedSet)
     def __isub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if isinstance(orderedSet, OrderedSet):
-            self.container = [i for i in self.container if i not in orderedSet.container]
-            return self
-        raise TypeError(f"unsupported operand type(s) for -=: '{type(self.__name__)}' and '{type(orderedSet).__name__}'")
+        if not isinstance(orderedSet, OrderedSet):
+            raise TypeError(f"unsupported operand type(s) for -=: '{type(self.__name__)}' and '{type(orderedSet).__name__}'")
+        self.container = [i for i in self.container if i not in orderedSet.container]
+        return self
+    def __and__(self, orderedSet: "OrderedSet"): 
+        if not isinstance(orderedSet, OrderedSet): 
+            raise TypeError(f"unsupported operand type(s) for &: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+        return self.__add__(orderedSet)
+    def __rand__(self, orderedSet: "OrderedSet"):
+        if not isinstance(orderedSet, OrderedSet): 
+            raise TypeError(f"unsupported operand type(s) for &: '{type(orderedSet).__name__}' and '{type(self).__name__}'")
+        return self.__add__(orderedSet)
     def __iter__(self): return iter(self.container)
     def __getitem__(self, index: int | slice):
         if not isinstance(index, int | slice): raise TypeError(f"'index' must be 'int' or 'slice', not '{type(index).__name__}'")
@@ -60,6 +68,7 @@ class OrderedSet():
     def remove(self, el: Hashable):
         if el in self.container: self.container.remove(el)
     def pop(self, index: int = 0): return self.container.pop(index)
+    def reverse(self): self.container = self.container[::-1]
     def insert(self, item: Hashable, position: int = 0):
         hash(item)
         self.container.insert(position, item)
