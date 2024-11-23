@@ -30,6 +30,7 @@ class OrderedSet():
     def __setitem__(self, index: int, value: Hashable):
         if not isinstance(index, int): raise TypeError(f"'index' must be 'int', not '{type(index).__name__}'")
         if index>=(l:=len(self.container)) or abs(index)>l: raise IndexError("container index out of range")
+        if value in self.container: return
         hash(value)
         self.container[index] = value
     def __delitem__(self, index: int | slice):
