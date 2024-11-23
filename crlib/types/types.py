@@ -18,7 +18,7 @@ class OrderedSet():
         self.container = [i for i in self.container if i not in orderedSet.container]
         return self
     def __and__(self, orderedSet: "OrderedSet") -> "OrderedSet": 
-        return self.__add__(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
+        return self.union(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __rand__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         return self.union(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __iter__(self): return iter(self.container)
