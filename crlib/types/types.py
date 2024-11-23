@@ -4,31 +4,23 @@ class OrderedSet():
         self.container: list = list(dict.fromkeys(obj)) if obj else []
     def __call__(self, orderedSet: "OrderedSet" | Iterable[Hashable]): self.update(orderedSet)
     def __add__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if not isinstance(orderedSet, OrderedSet): 
-            raise TypeError(f"unsupported operand type(s) for +: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-        return self.union(orderedSet)
+        return self.union(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __iadd__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if not isinstance(orderedSet, OrderedSet):
-            raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
+            return NotImplemented
         self.update(orderedSet)
         return self
     def __sub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if not isinstance(orderedSet, OrderedSet):
-            raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-        return self.difference(orderedSet)
+        return self.difference(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __isub__(self, orderedSet: "OrderedSet") -> "OrderedSet":
         if not isinstance(orderedSet, OrderedSet):
-            raise TypeError(f"unsupported operand type(s) for -=: '{type(self.__name__)}' and '{type(orderedSet).__name__}'")
+            return NotImplemented
         self.container = [i for i in self.container if i not in orderedSet.container]
         return self
     def __and__(self, orderedSet: "OrderedSet") -> "OrderedSet": 
-        if not isinstance(orderedSet, OrderedSet): 
-            raise TypeError(f"unsupported operand type(s) for &: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-        return self.__add__(orderedSet)
+        return self.__add__(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __rand__(self, orderedSet: "OrderedSet") -> "OrderedSet":
-        if not isinstance(orderedSet, OrderedSet): 
-            raise TypeError(f"unsupported operand type(s) for &: '{type(orderedSet).__name__}' and '{type(self).__name__}'")
-        return self.__add__(orderedSet)
+        return self.union(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __iter__(self): return iter(self.container)
     def __getitem__(self, index: int | slice):
         if not isinstance(index, int | slice): raise TypeError(f"'index' must be 'int' or 'slice', not '{type(index).__name__}'")
@@ -46,9 +38,7 @@ class OrderedSet():
     def __str__(self) -> str: return f"{{{', '.join(map(repr, self.container))}}}"
     def __repr__(self) -> str: return f"{type(self).__name__}({self})"
     def __eq__(self, orderedSet: "OrderedSet") -> bool:
-        if not isinstance(orderedSet, OrderedSet):
-            raise TypeError(f"unsupported operand type(s) for ==: '{type(self).__name__}' and '{type(orderedSet).__name__}'")
-        return self.compare(orderedSet)
+        return self.compare(orderedSet) if isinstance(orderedSet, OrderedSet) else NotImplemented
     def __len__(self) -> int: return len(self.container)
     def difference(self, orderedSet: "OrderedSet" | Iterable[Hashable]) -> "OrderedSet":
         orderedSet = orderedSet.container if isinstance(orderedSet, OrderedSet) else orderedSet
