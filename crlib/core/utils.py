@@ -79,32 +79,29 @@ def parse(
             raise ValueError("Порожні дужки")
 
     def parse_in(rem: re.Match):
-        formula, mult = rem.group(1), int(rem.group(2)) if rem.group(2) else 1
+        formula, mult = rem.group(1), int(rem.group(2) or 1)
         return "".join(
             f"{el}{multiplier}"
             for el, multiplier in {
                 elem: amount * mult for elem, amount in parsed(formula).items()
             }.items()
         )
-
+    
     def parsed(formula: str):
         t = {}
         while "(" in formula or ")" in formula:
             formula = re.sub(r"\(([^()]+)\)(\d*)", parse_in, formula)
         for el in get_elements(formula):
-            elems = re.findall(rf"{el}(?![a-z])(\d*)", formula)
-            t[el] = t.get(el, 0) + sum(int(elem) if elem else 1 for elem in elems)
+            elems = re.findall(fr"{el}(?![a-z])(\d*)", formula)
+            t[el] = sum((int(elem or 1) for elem in elems), t.get(el, 0))
         return t
 
-    pre_mult = re.match(r"\d+", formula)
-    pre_mult = int(pre_mult.group()) if pre_mult else 1
+    pre_mult = int(pre_mult.group()) if (pre_mult := re.match(r"\d+", formula)) else 1
     if remove_first_multiplier:
-        return formula[len(str(pre_mult)) if pre_mult != 1 else 0 :]
+        return formula[len(str(pre_mult)) if pre_mult != 1 else 0:]
     if get_first_mult:
         return pre_mult
-    elements = get_elements(formula)
-    t = dict.fromkeys(elements)
-    t.update(parsed(formula))
+    t = parsed(formula)
     if t:
         if not ignore_first_multiplier and pre_mult:
             t = {key: val * pre_mult for key, val in t.items()}
