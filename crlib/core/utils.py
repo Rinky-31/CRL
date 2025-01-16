@@ -134,7 +134,7 @@ def underline(
         )
     return_str, text = (
         text,
-        text[(start := start if start else 0) : (end := end if end else len(text))],
+        text[(start := start or 0) : (end := end or len(text))],
     )
     r, c = list(" " * len(text)), text.count(text_to_underline)
     res: list[tuple[int, int]] = []
