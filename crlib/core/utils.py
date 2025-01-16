@@ -9,6 +9,10 @@ def get_elements(
 ) -> list[str]:
     """
     ...
+
+    with_acid_residue - Відокремити кислотний залишок як елемент
+
+    with_rep - Елементи з повторами
     """
     if not formula:
         return
@@ -16,7 +20,7 @@ def get_elements(
     if not with_acid_residue:
         pass
     else:
-        while rs := has_acid_residue(formula):
+        while not with_rep and (rs := has_acid_residue(formula)):
             index = formula.find(rs)
             res.append(rs)
             formula = (
@@ -24,17 +28,14 @@ def get_elements(
                 if index < len(formula) - 1
                 else formula[:index]
             )
-            # if not with_rep:
-            #     for i in rs:
-            #         if i in res: res.remove(i)
-            max_res = max(res, key=len)
-            res = [i for i in res if not i in max_res or i == max_res]
+            acid_residue = max(res, key=len)
+            res = [i for i in res if not i in acid_residue or i == acid_residue]
+    for i in res:
+        if not is_element(i) and not is_acid_residue(i):
+            raise ElementsError(f"{i} is not element or acid_residue", i)
     if with_rep:
         return res
-    for i in (res := list(dict.fromkeys(res))):
-        if not is_element(i) and not is_acid_residue(i):
-            raise ElementsError(f"{i} is not element", i)
-    return res
+    return list(dict.fromkeys(res))
 
 
 @cat()
@@ -86,19 +87,19 @@ def parse(
                 elem: amount * mult for elem, amount in parsed(formula).items()
             }.items()
         )
-    
+
     def parsed(formula: str):
         t = {}
         while "(" in formula or ")" in formula:
             formula = re.sub(r"\(([^()]+)\)(\d*)", parse_in, formula)
         for el in get_elements(formula):
-            elems = re.findall(fr"{el}(?![a-z])(\d*)", formula)
+            elems = re.findall(rf"{el}(?![a-z])(\d*)", formula)
             t[el] = sum((int(elem or 1) for elem in elems), t.get(el, 0))
         return t
 
     pre_mult = int(pre_mult.group()) if (pre_mult := re.match(r"\d+", formula)) else 1
     if remove_first_multiplier:
-        return formula[len(str(pre_mult)) if pre_mult != 1 else 0:]
+        return formula[len(str(pre_mult)) if pre_mult != 1 else 0 :]
     if get_first_mult:
         return pre_mult
     t = parsed(formula)
