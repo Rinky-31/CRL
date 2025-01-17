@@ -44,7 +44,7 @@ def cat(NCOE: bool = False):
                         if NCOE:
                             break
                         raise TypeError(
-                            f"argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
+                            f"keyword-argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
                         )
             else:
                 res = True
