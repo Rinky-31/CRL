@@ -6,7 +6,7 @@ from types import UnionType, FunctionType
 def cat(ncoe: bool = False):
     """Check Arguments Type
 
-    NCOE (Not Call On Error) - not call the function if arguments check failed
+    ncoe (Not Call On Error) - not raise TypeError, but also not call the function if arguments check failed
     """
 
     def wrapper(func: FunctionType):
@@ -28,7 +28,7 @@ def cat(ncoe: bool = False):
                         if ncoe:
                             break
                         raise TypeError(
-                            f"positional-argument '{argname}' must be '{annotation[argname].__name__ if not isinstance(annotation[argname], UnionType) else annotation[argname]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
+                            f"positional-argument '{argname}' must be '{annotation[argname].__name__ if not isinstance(annotation[argname], UnionType) else annotation[argname]}', not '{type(arg).__name__}'"
                         )
             else:
                 res = True
@@ -44,7 +44,7 @@ def cat(ncoe: bool = False):
                         if ncoe:
                             break
                         raise TypeError(
-                            f"keyword-argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
+                            f"keyword-argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(kw[arg]).__name__}'"
                         )
             else:
                 res = True
