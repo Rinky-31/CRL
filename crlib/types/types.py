@@ -153,7 +153,7 @@ class OrderedSet:
             or abs(second_index) > l
         ):
             raise IndexError("container index out of range")
-        self[first_index], self[second_index] = self[second_index], self[first_index]
+        self.container[first_index], self.container[second_index] = self.container[second_index], self.container[first_index]
 
     def compare(self, orderedSet: "OrderedSet", ordered: bool = False) -> bool:
         if not isinstance(orderedSet, OrderedSet):
