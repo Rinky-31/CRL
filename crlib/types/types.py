@@ -137,7 +137,7 @@ class OrderedSet:
     def sort(self, key: Callable | None = None, reverse: bool = False):
         self.container.sort(key=key, reverse=reverse)
 
-    def insert(self, item: Hashable, position: int = 0):
+    def insert(self, position: int, item: Hashable):
         hash(item)
         self.container.insert(position, item)
 
