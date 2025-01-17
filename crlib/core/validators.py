@@ -3,7 +3,7 @@ from ..errors import ElementsError
 from types import UnionType, FunctionType
 
 
-def cat(NCOE: bool = False):
+def cat(ncoe: bool = False):
     """Check Arguments Type
 
     NCOE (Not Call On Error) - not call the function if arguments check failed
@@ -25,7 +25,7 @@ def cat(NCOE: bool = False):
                     except TypeError:
                         continue
                     if not res:
-                        if NCOE:
+                        if ncoe:
                             break
                         raise TypeError(
                             f"argument '{argname}' must be '{annotation[argname].__name__ if not isinstance(annotation[argname], UnionType) else annotation[argname]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
@@ -41,7 +41,7 @@ def cat(NCOE: bool = False):
                     except TypeError:
                         continue
                     if not res:
-                        if NCOE:
+                        if ncoe:
                             break
                         raise TypeError(
                             f"keyword-argument '{arg}' must be '{annotation[arg].__name__ if not isinstance(annotation[arg], UnionType) else annotation[arg]}', not '{type(arg).__name__ if not isinstance(arg, UnionType) else arg}'"
