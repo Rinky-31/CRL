@@ -100,7 +100,7 @@ def parse(
         while "(" in formula or ")" in formula:
             formula = re.sub(r"\(([^()]+)\)(\d*)", parse_in, formula)
         for el in get_elements(formula):
-            elems = re.findall(fr"{el}(?![a-z])(\d*)", formula)
+            elems = re.findall(rf"{el}(?![a-z])(\d*)", formula)
             t[el] = sum((int(elem or 1) for elem in elems), t.get(el, 0))
         return t
 
