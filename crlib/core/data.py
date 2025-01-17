@@ -34,6 +34,7 @@ metals = {
     "Fe": None,
     "Ni": None,
     "Pb": None,
+    "Co": None,
 }
 not_metals = {
     "H": 1,
