@@ -68,6 +68,7 @@ def parse(
     get_first_mult: bool = False,
     remove_first_multiplier: bool = False,
     ignore_first_multiplier: bool = False,
+    allow_inner_first_multipliers: bool = False,
 ) -> dict[str, int] | int | str | bool:
     if not formula:
         raise TypeError("Incorrect formula")
@@ -78,13 +79,19 @@ def parse(
             )
         elif "()" in formula:
             raise ValueError("Порожні дужки")
+    pre_multiplier = lambda formula: int(re.match(r"(-+)?\d*", formula).group() or 1)
 
     def parse_in(rem: re.Match):
         formula, mult = rem.group(1), int(rem.group(2) or 1)
+        res = parsed(formula)
+        if allow_inner_first_multipliers and not ignore_first_multiplier:
+            pre_mult = pre_multiplier(formula)
+            if pre_mult != 1:
+                res = {el: amount * pre_mult for el, amount in res.items()}
         return "".join(
             f"{el}{multiplier}"
             for el, multiplier in {
-                elem: amount * mult for elem, amount in parsed(formula).items()
+                elem: amount * mult for elem, amount in res.items()
             }.items()
         )
 
@@ -93,21 +100,21 @@ def parse(
         while "(" in formula or ")" in formula:
             formula = re.sub(r"\(([^()]+)\)(\d*)", parse_in, formula)
         for el in get_elements(formula):
-            elems = re.findall(rf"{el}(?![a-z])(\d*)", formula)
+            elems = re.findall(fr"{el}(?![a-z])(\d*)", formula)
             t[el] = sum((int(elem or 1) for elem in elems), t.get(el, 0))
         return t
 
-    pre_mult = int(pre_mult.group()) if (pre_mult := re.match(r"\d+", formula)) else 1
+    pre_mult = pre_multiplier(formula)
     if remove_first_multiplier:
         return formula[len(str(pre_mult)) if pre_mult != 1 else 0 :]
     if get_first_mult:
         return pre_mult
     t = parsed(formula)
-    if t:
-        if not ignore_first_multiplier and pre_mult:
-            t = {key: val * pre_mult for key, val in t.items()}
-        return t
-    return False
+    if not ignore_first_multiplier:
+        pre_mult = pre_multiplier(formula)
+        if pre_mult != 1:
+            t = {el: amount * pre_mult for el, amount in t.items()}
+    return t or False
 
 
 @cat()
