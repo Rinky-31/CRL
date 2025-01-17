@@ -139,6 +139,8 @@ class OrderedSet:
 
     def insert(self, position: int, item: Hashable):
         hash(item)
+        if item in self.container:
+            return
         self.container.insert(position, item)
 
     def exchange(self, first_index: int, second_index: int):
